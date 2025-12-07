@@ -18,6 +18,40 @@ export const transporter = nodemailer.createTransport({
 
 
 
+
+/**
+ * @swagger
+ * /customer/signup:
+ *   post:
+ *     summary: Register a new customer
+ *     description: Create a new customer account
+ *     tags: [Customer]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - phone
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Customer created successfully
+ *       400:
+ *         description: Email already registered
+ */
 export async function handleSignup(req, res) {
     try {
         const { name, email, password, phone } = req.body;
@@ -43,6 +77,36 @@ export async function handleSignup(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /customer/signin:
+ *   post:
+ *     summary: Customer Sign In
+ *     description: Authenticate a customer
+ *     tags: [Customer]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Invalid email or password
+ */
 export async function handleSigniIn(req, res) {
     const { email, password } = req.body;
     const customer = await Customer.findOne({ email: email, isVerified: true });
@@ -99,6 +163,33 @@ export async function sendOTP(otp, email) {
     }
 }
 
+
+/**
+ * @swagger
+ * /customer/verify-otp:
+ *   post:
+ *     summary: Verify OTP
+ *     tags: [Customer]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - otp
+ *             properties:
+ *               id:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Verification successful
+ *       400:
+ *         description: Invalid OTP
+ */
 export async function verifyOtp(req, res) {
     try {
         const { id, otp } = req.body;
@@ -121,6 +212,23 @@ export async function verifyOtp(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /customer/services:
+ *   get:
+ *     summary: Get available services
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter by category
+ *     responses:
+ *       200:
+ *         description: List of services
+ */
 export async function getServices(req, res) {
     try {
         const { category, priceRange } = req.query;
@@ -134,6 +242,39 @@ export async function getServices(req, res) {
 }
 
 
+/**
+ * @swagger
+ * /customer/book:
+ *   post:
+ *     summary: Book a service
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Customer ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - serviceId
+ *               - datetime
+ *             properties:
+ *               serviceId:
+ *                 type: string
+ *               datetime:
+ *                 type: string
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Booking successful
+ */
 export async function requestService(req, res) {
     try {
         const customerId = req.query.id;
@@ -161,6 +302,22 @@ export async function requestService(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * /customer/active-requests:
+ *   get:
+ *     summary: Get active requests
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: query
+ *         name: customerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of active requests
+ */
 export async function getActiveRequests(req, res) {
     try {
         const { customerId } = req.query;
@@ -178,6 +335,23 @@ export async function getActiveRequests(req, res) {
         res.status(500).json({ message: "Error fetching requests" });
     }
 }
+
+/**
+ * @swagger
+ * /customer/past-requests:
+ *   get:
+ *     summary: Get past requests
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: query
+ *         name: customerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of past requests
+ */
 export async function getPastRequests(req, res) {
     try {
         const { customerId } = req.query;
@@ -196,6 +370,31 @@ export async function getPastRequests(req, res) {
 }
 
 
+
+/**
+ * @swagger
+ * /customer/save-service:
+ *   post:
+ *     summary: Save a service for later
+ *     tags: [Customer]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - customerId
+ *               - serviceId
+ *             properties:
+ *               customerId:
+ *                 type: string
+ *               serviceId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Service saved successfully
+ */
 export async function saveService(req, res) {
     try {
         const { customerId, serviceId } = req.body;
@@ -208,6 +407,24 @@ export async function saveService(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /customer/saved-services:
+ *   get:
+ *     summary: Get saved services
+ *     tags: [Customer]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Customer ID
+ *     responses:
+ *       200:
+ *         description: List of saved services
+ */
 export async function getSavedServices(req, res) {
     try {
         const customerId = req.query.id;
@@ -225,6 +442,30 @@ export async function getSavedServices(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * /customer/unsave-service:
+ *   delete:
+ *     summary: Unsave a service
+ *     tags: [Customer]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - customerId
+ *               - savedServiceId
+ *             properties:
+ *               customerId:
+ *                 type: string
+ *               savedServiceId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Service unsaved successfully
+ */
 export async function unsaveService(req, res) {
     try {
         const { customerId, savedServiceId } = req.body;
@@ -240,6 +481,17 @@ export async function unsaveService(req, res) {
 
 }
 
+
+/**
+ * @swagger
+ * /public/providers/featured:
+ *   get:
+ *     summary: Get featured providers
+ *     tags: [Public]
+ *     responses:
+ *       200:
+ *         description: List of featured providers
+ */
 export async function getFeaturedProviders(req, res) {
     try {
         // Assuming 'isFeatured' is a field in ServiceProvider schema

@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 import { handleSignup } from './customer.js';
 import { handleSigniIn } from './customer.js';
 import { verifyOtp } from './customer.js';
@@ -50,10 +52,41 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Khadamaty API',
+            version: '1.0.0',
+            description: 'API documentation for Khadamaty application',
+        },
+        servers: [
+            {
+                url: `http://localhost:${port}`,
+            },
+        ],
+    },
+    apis: ['*.js'], // Process all js files in current directory
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
+    console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
 });
 
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Health check
+ *     description: Returns Hello World to verify server is running
+ *     responses:
+ *       200:
+ *         description: Server is up
+ */
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });

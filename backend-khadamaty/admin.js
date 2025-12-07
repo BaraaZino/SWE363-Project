@@ -12,6 +12,31 @@ export async function getAllCustomers(req, res) {
 }
 
 
+
+/**
+ * @swagger
+ * /admin/signin:
+ *   post:
+ *     summary: Admin Sign In
+ *     tags: [Admin]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ */
 export async function signInAdmin(req, res) {
     try {
         const { email, password } = req.body;
@@ -28,6 +53,16 @@ export async function signInAdmin(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * /admin/service-providers:
+ *   get:
+ *     summary: Get all service providers
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: List of all service providers
+ */
 export async function getAllServiceProviders(req, res) {
     try {
         const serviceProviders = await ServiceProvider.find();
@@ -37,6 +72,16 @@ export async function getAllServiceProviders(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * /admin/services:
+ *   get:
+ *     summary: Get all services
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: List of all services
+ */
 export async function getAllServices(req, res) {
     try {
         const services = await Service.find();
@@ -47,6 +92,23 @@ export async function getAllServices(req, res) {
 }
 
 // Approve provider (set isVerified to true and isFeatured optionally)
+
+/**
+ * @swagger
+ * /admin/providers/{providerId}/approve:
+ *   post:
+ *     summary: Approve a provider
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Provider approved
+ */
 export async function approveProvider(req, res) {
     try {
         const { providerId } = req.params;
@@ -96,7 +158,22 @@ async function sendApprovalEmail(email) {
     }
 }
 
-// Reject provider (set isVerified to false)
+/**
+ * @swagger
+ * /admin/providers/{providerId}/reject:
+ *   post:
+ *     summary: Reject a provider
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Provider rejected
+ */
 export async function rejectProvider(req, res) {
     try {
         const { providerId } = req.params;
@@ -115,6 +192,34 @@ export async function rejectProvider(req, res) {
 }
 
 // Update provider status (for activation/suspension)
+
+/**
+ * @swagger
+ * /admin/providers/{providerId}/status:
+ *   patch:
+ *     summary: Update provider status
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isVerified:
+ *                 type: boolean
+ *               isFeatured:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Status updated
+ */
 export async function updateProviderStatus(req, res) {
     try {
         const { providerId } = req.params;
@@ -134,6 +239,17 @@ export async function updateProviderStatus(req, res) {
 }
 
 // Get all admins
+
+/**
+ * @swagger
+ * /admin/admins:
+ *   get:
+ *     summary: Get all admins
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: List of all admins
+ */
 export async function getAllAdmins(req, res) {
     try {
         const admins = await Admin.find();
@@ -143,7 +259,33 @@ export async function getAllAdmins(req, res) {
     }
 }
 
-// Update admin role (if you add a role field to Admin schema later)
+/**
+ * @swagger
+ * /admin/admins/{adminId}/role:
+ *   patch:
+ *     summary: Update admin role
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: adminId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - role
+ *             properties:
+ *               role:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Role updated
+ */
 export async function updateAdminRole(req, res) {
     try {
         const { adminId } = req.params;
@@ -163,6 +305,17 @@ export async function updateAdminRole(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /admin/providers/pending:
+ *   get:
+ *     summary: Get pending providers (Admin)
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: List of pending providers
+ */
 export async function getPendingProviders(req, res) {
     try {
         const providers = await ServiceProvider.find({ isApproved: false, isRejected: false });

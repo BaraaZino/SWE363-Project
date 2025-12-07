@@ -76,6 +76,33 @@ export async function handleProviderSignup(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /provider/verify-otp:
+ *   post:
+ *     summary: Verify Provider OTP
+ *     tags: [Provider]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - otp
+ *             properties:
+ *               id:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Verification successful
+ *       400:
+ *         description: Invalid OTP
+ */
 export async function verifyProviderOtp(req, res) {
     try {
         const { id, otp } = req.body;
@@ -93,6 +120,38 @@ export async function verifyProviderOtp(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /provider/signin:
+ *   post:
+ *     summary: Provider Sign In
+ *     description: Authenticate a service provider
+ *     tags: [Provider]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Invalid credentials
+ *       403:
+ *         description: Provider not verified or approved
+ */
 export async function handleProviderSignin(req, res) {
     try {
         const { email, password } = req.body;
@@ -128,6 +187,23 @@ export async function handleProviderSignin(req, res) {
 }
 
 // CRUD for provider's services
+
+/**
+ * @swagger
+ * /provider/services:
+ *   get:
+ *     summary: Get provider services
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: query
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of provider services
+ */
 export async function getProviderServices(req, res) {
     try {
         const { providerId } = req.query;
@@ -139,6 +215,46 @@ export async function getProviderServices(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * /provider/services:
+ *   post:
+ *     summary: Create new service
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: query
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - category
+ *               - description
+ *               - price
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               priceType:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Service created
+ */
 export async function createProviderService(req, res) {
     try {
         const { providerId } = req.query;
@@ -152,6 +268,42 @@ export async function createProviderService(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /provider/services/{serviceId}:
+ *   put:
+ *     summary: Update a service
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: path
+ *         name: serviceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               priceType:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Service updated
+ */
 export async function updateProviderService(req, res) {
     try {
         const { serviceId } = req.params;
@@ -168,6 +320,22 @@ export async function updateProviderService(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * /provider/services/{serviceId}:
+ *   delete:
+ *     summary: Delete a service
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: path
+ *         name: serviceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Service deleted
+ */
 export async function deleteProviderService(req, res) {
     try {
         const { serviceId } = req.params;
@@ -180,6 +348,27 @@ export async function deleteProviderService(req, res) {
 }
 
 // Provider requests/jobs management
+
+/**
+ * @swagger
+ * /provider/requests:
+ *   get:
+ *     summary: Get provider requests
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: query
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of requests
+ */
 export async function getProviderRequests(req, res) {
     try {
         const { providerId, status } = req.query;
@@ -197,6 +386,23 @@ export async function getProviderRequests(req, res) {
     }
 }
 
+
+/**
+ * @swagger
+ * /provider/pending-requests:
+ *   get:
+ *     summary: Get pending requests
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: query
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of pending requests
+ */
 export const getPendingRequests = async (req, res) => {
     try {
         const { providerId } = req.query;
@@ -223,6 +429,22 @@ export const getPendingRequests = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /provider/active-requests:
+ *   get:
+ *     summary: Get active requests
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: query
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of active requests
+ */
 export const getActiveRequestsSP = async (req, res) => {
     try {
         const { providerId } = req.query;
@@ -249,6 +471,22 @@ export const getActiveRequestsSP = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /provider/past-requests:
+ *   get:
+ *     summary: Get past requests
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: query
+ *         name: providerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of past requests
+ */
 export const getPastRequestsSP = async (req, res) => {
     try {
         const { providerId } = req.query;
@@ -279,6 +517,23 @@ export const getPastRequestsSP = async (req, res) => {
 
 
 
+
+/**
+ * @swagger
+ * /provider/services/{serviceId}:
+ *   get:
+ *     summary: Get service by ID
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: path
+ *         name: serviceId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Service details
+ */
 export async function getProviderServiceById(req, res) {
     try {
         const { serviceId } = req.params;
@@ -290,6 +545,33 @@ export async function getProviderServiceById(req, res) {
     }
 }
 
+/**
+ * @swagger
+ * /provider/requests/{requestId}:
+ *   patch:
+ *     summary: Update request status
+ *     tags: [Provider]
+ *     parameters:
+ *       - in: path
+ *         name: requestId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Status updated
+ */
 export async function updateProviderRequestStatus(req, res) {
     try {
         const { requestId } = req.params;
